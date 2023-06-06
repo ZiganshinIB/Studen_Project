@@ -1,8 +1,7 @@
 import sys
 import pygame
 
-width = 500
-height = 500
+
 
 
 class Coordinate:
@@ -45,9 +44,27 @@ class Circle:
         return self.coordinate.get_coordinate()
 
 
+class Canvas:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+    def hit_wall(self, circle: Circle):
+        if (circle.coordinate.x - circle.radius <= 0) or (circle.coordinate.x + circle.radius >= self.width):
+            circle.sped_x = -circle.sped_x
+        if (circle.coordinate.y - circle.radius <= 0) or (circle.coordinate.y + circle.radius >= self.height):
+            circle.sped_y = -circle.sped_y
+
+    def get_canvas(self):
+        return self.width, self.height
+
+
 def main():
     print(f"[+] Start project")
-    screen, clock = create_canvas()
+    canvas = Canvas(width=500, height=500)
+    screen = pygame.display.set_mode(canvas.get_canvas())
+    pygame.display.set_caption('YAHOOOO')
+    clock = pygame.time.Clock()
     print(f"[+] create canvas")
     coordinate = Coordinate(x=30, y=30)
     circle_boss = Circle(coordinate, sped_x=50, sped_y=50, color=(150, 10, 50), radius=20)
@@ -56,17 +73,13 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
                 sys.exit()
+        canvas.hit_wall(circle_boss)
         circle_boss.move(dt)
         screen.fill((0, 0, 0))  # black
         pygame.draw.circle(screen, circle_boss.color, circle_boss.get_coordinate(), circle_boss.radius)
         pygame.display.flip()
 
 
-def create_canvas():
-    screen = pygame.display.set_mode((width, height))
-    pygame.display.set_caption('YAHOOOO')
-    clock = pygame.time.Clock()
-    return screen, clock
 
 
 if __name__ == "__main__":

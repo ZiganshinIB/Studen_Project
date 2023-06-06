@@ -29,6 +29,20 @@ class Coordinate:
         return self.x, self.y
 
 
+
+
+
+class Canvas:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+
+
+
+    def get_canvas(self):
+        return self.width, self.height
+
+
 class Circle:
     def __init__(self, coordinate: Coordinate, sped_x: float, sped_y: float, color, radius: float):
         self.coordinate = coordinate
@@ -38,26 +52,16 @@ class Circle:
         self.radius = radius
 
     def move(self, dt):
-        self.coordinate.step_all(dt*self.sped_x, dt*self.sped_y)
+        self.coordinate.step_all(dt * self.sped_x, dt * self.sped_y)
 
     def get_coordinate(self):
         return self.coordinate.get_coordinate()
 
-
-class Canvas:
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-
-    def hit_wall(self, circle: Circle):
-        if (circle.coordinate.x - circle.radius <= 0) or (circle.coordinate.x + circle.radius >= self.width):
-            circle.sped_x = -circle.sped_x
-        if (circle.coordinate.y - circle.radius <= 0) or (circle.coordinate.y + circle.radius >= self.height):
-            circle.sped_y = -circle.sped_y
-
-    def get_canvas(self):
-        return self.width, self.height
-
+    def hit_wall(self, wall: Canvas):
+        if (self.coordinate.x - self.radius <= 0) or (self.coordinate.x + self.radius >= wall.width):
+            self.sped_x = -self.sped_x
+        if (self.coordinate.y - self.radius <= 0) or (self.coordinate.y + self.radius >= wall.height):
+            self.sped_y = -self.sped_y
 
 def main():
     print(f"[+] Start project")
@@ -73,7 +77,7 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
                 sys.exit()
-        canvas.hit_wall(circle_boss)
+        circle_boss.hit_wall(canvas)
         circle_boss.move(dt)
         screen.fill((0, 0, 0))  # black
         pygame.draw.circle(screen, circle_boss.color, circle_boss.get_coordinate(), circle_boss.radius)

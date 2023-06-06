@@ -2,8 +2,6 @@ import sys
 import pygame
 
 
-
-
 class Coordinate:
     def __init__(self, x, y):
         self.x = x
@@ -27,9 +25,6 @@ class Coordinate:
 
     def get_coordinate(self):
         return self.x, self.y
-
-
-
 
 
 class Canvas:
@@ -61,6 +56,22 @@ class Circle:
         if (self.coordinate.y - self.radius <= 0) or (self.coordinate.y + self.radius >= wall.height):
             self.sped_y = -self.sped_y
 
+    def make_acceleration_up(self, boost: float = 10):
+        self.sped_y -= boost
+
+    def make_acceleration_down(self, boost: float = 10):
+        self.sped_y += boost
+
+    def make_acceleration_left(self, boost: float = 10):
+        self.sped_x -= boost
+
+    def make_acceleration_right(self, boost: float = 10):
+        self.sped_x += boost
+
+    def upgrade(self, canvas, dt):
+        self.hit_wall(canvas)
+        self.move(dt)
+
 
 def main():
     print(f"[+] Start project")
@@ -76,17 +87,17 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-            if event.type == pygame.KEYUP:
+            print(event)
+            if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
-                    pass
+                    circle_boss.make_acceleration_up()
                 if event.key == pygame.K_DOWN:
-                    pass
+                    circle_boss.make_acceleration_down()
                 if event.key == pygame.K_LEFT:
-                    pass
+                    circle_boss.make_acceleration_left()
                 if event.key == pygame.K_RIGHT:
-                    pass
-        circle_boss.hit_wall(canvas)
-        circle_boss.move(dt)
+                    circle_boss.make_acceleration_right()
+        circle_boss.upgrade(canvas, dt)
         screen.fill((0, 0, 0))  # black
         pygame.draw.circle(screen, circle_boss.color, circle_boss.get_coordinate(), circle_boss.radius)
         pygame.display.flip()

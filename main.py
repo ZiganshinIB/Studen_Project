@@ -61,6 +61,7 @@ class Circle:
         if (self.coordinate.y - self.radius <= 0) or (self.coordinate.y + self.radius >= wall.height):
             self.sped_y = -self.sped_y
 
+
 def main():
     print(f"[+] Start project")
     canvas = Canvas(width=500, height=500)

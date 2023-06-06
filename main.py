@@ -76,6 +76,15 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_UP:
+                    pass
+                if event.key == pygame.K_DOWN:
+                    pass
+                if event.key == pygame.K_LEFT:
+                    pass
+                if event.key == pygame.K_RIGHT:
+                    pass
         circle_boss.hit_wall(canvas)
         circle_boss.move(dt)
         screen.fill((0, 0, 0))  # black

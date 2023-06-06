@@ -37,8 +37,6 @@ class Canvas:
         self.width = width
         self.height = height
 
-
-
     def get_canvas(self):
         return self.width, self.height
 
@@ -82,8 +80,6 @@ def main():
         screen.fill((0, 0, 0))  # black
         pygame.draw.circle(screen, circle_boss.color, circle_boss.get_coordinate(), circle_boss.radius)
         pygame.display.flip()
-
-
 
 
 if __name__ == "__main__":

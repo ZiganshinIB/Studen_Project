@@ -74,7 +74,7 @@ def main():
     while True:
         dt = clock.tick(50) / 1000.0
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or event.type == pygame.KEYDOWN:
+            if event.type == pygame.QUIT:
                 sys.exit()
         circle_boss.hit_wall(canvas)
         circle_boss.move(dt)

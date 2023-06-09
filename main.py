@@ -37,6 +37,8 @@ class Canvas:
 
 
 class Circle:
+    boost_x: float = 0
+    boost_y: float = 0
     def __init__(self, coordinate: Coordinate, sped_x: float, sped_y: float, color, radius: float):
         self.coordinate = coordinate
         self.sped_x = sped_x
@@ -45,6 +47,9 @@ class Circle:
         self.radius = radius
 
     def move(self, dt):
+        self.sped_x += self.boost_x
+        self.sped_y += self.boost_y
+        print(f"sped_x: {self.sped_x}\tsped_y: {self.sped_y}")
         self.coordinate.step_all(dt * self.sped_x, dt * self.sped_y)
 
     def get_coordinate(self):
@@ -56,17 +61,23 @@ class Circle:
         if (self.coordinate.y - self.radius <= 0) or (self.coordinate.y + self.radius >= wall.height):
             self.sped_y = -self.sped_y
 
-    def make_acceleration_up(self, boost: float = 10):
-        self.sped_y -= boost
+    def set_boost_x(self, boost: float = 0):
+        self.boost_x = boost
 
-    def make_acceleration_down(self, boost: float = 10):
-        self.sped_y += boost
+    def set_boost_y(self, boost: float = 0):
+        self.boost_y = boost
 
-    def make_acceleration_left(self, boost: float = 10):
-        self.sped_x -= boost
+    def make_acceleration_up(self, boost: float = 3):
+        self.boost_y = -boost
 
-    def make_acceleration_right(self, boost: float = 10):
-        self.sped_x += boost
+    def make_acceleration_down(self, boost: float = 3):
+        self.boost_y = boost
+
+    def make_acceleration_left(self, boost: float = 3):
+        self.boost_x = -boost
+
+    def make_acceleration_right(self, boost: float = 3):
+        self.boost_x = boost
 
     def upgrade(self, canvas, dt):
         self.hit_wall(canvas)
@@ -81,13 +92,17 @@ def main():
     clock = pygame.time.Clock()
     print(f"[+] create canvas")
     coordinate = Coordinate(x=30, y=30)
-    circle_boss = Circle(coordinate, sped_x=50, sped_y=50, color=(150, 10, 50), radius=20)
+    circle_boss = Circle(coordinate, sped_x=30, sped_y=30, color=(150, 10, 50), radius=20)
     while True:
         dt = clock.tick(50) / 1000.0
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
-            print(event)
+            if event.type == pygame.KEYUP:
+                if (event.key == pygame.K_UP) or (event.key == pygame.K_DOWN):
+                    circle_boss.set_boost_y(0)
+                if (event.key == pygame.K_LEFT) or (event.key == pygame.K_RIGHT):
+                    circle_boss.set_boost_x(0)
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
                     circle_boss.make_acceleration_up()

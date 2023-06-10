@@ -32,7 +32,7 @@ class Canvas:
     def __init__(self, width, height):
         self.width = width
         self.height = height
-        self.resistance_coefficient = 0.004
+        self.resistance_coefficient = float(3/512)
 
     def get_canvas(self):
         return self.width, self.height
@@ -41,7 +41,7 @@ class Canvas:
 class Circle:
     boost_x: float = 0
     boost_y: float = 0
-    def __init__(self, coordinate: Coordinate, sped_x: float, sped_y: float, color, radius: float, wall: Canvas):
+    def __init__(self, coordinate: Coordinate, sped_x: float, sped_y: float, color:tuple, radius: float, wall: Canvas):
         self.coordinate = coordinate
         self.sped_x = sped_x
         self.sped_y = sped_y
@@ -52,7 +52,7 @@ class Circle:
     def move(self, dt):
         self.sped_x += self.boost_x - (self.sped_x * self.wall.resistance_coefficient)
         self.sped_y += self.boost_y - (self.sped_y * self.wall.resistance_coefficient)
-        print(f"sped_x: {self.sped_x}\tsped_y: {self.sped_y}")
+        #print(f"sped_x: {self.sped_x}\tsped_y: {self.sped_y}")
         self.coordinate.step_all(dt * self.sped_x, dt * self.sped_y)
 
     def get_coordinate(self):
@@ -85,6 +85,11 @@ class Circle:
     def upgrade(self, dt):
         self.hit_wall()
         self.move(dt)
+        speed = ((self.sped_y)**2 + (self.sped_x)**2)**0.5
+        if speed < 512:
+            self.color= (int(speed/2), self.color[1], self.color[2])
+        else:
+            self.color=(255, self.color[1], self.color[2])
 
 
 def main():

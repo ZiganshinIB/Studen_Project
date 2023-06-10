@@ -1,5 +1,7 @@
+
 import sys
 import pygame
+from math import acos, asin, pi, sin, cos
 
 
 class Coordinate:
@@ -39,6 +41,7 @@ class Canvas:
 
 
 class Circle:
+
     boost_x: float = 0
     boost_y: float = 0
     def __init__(self, coordinate: Coordinate, sped_x: float, sped_y: float, color:tuple, radius: float, wall: Canvas):
@@ -48,6 +51,8 @@ class Circle:
         self.color = color
         self.radius = radius
         self.wall = wall
+
+
 
     def move(self, dt):
         self.sped_x += self.boost_x - (self.sped_x * self.wall.resistance_coefficient)
@@ -63,6 +68,15 @@ class Circle:
             self.sped_x = -self.sped_x
         if (self.coordinate.y - self.radius <= 0) or (self.coordinate.y + self.radius >= self.wall.height):
             self.sped_y = -self.sped_y
+
+    def hit_other_circle(self, other):
+        flag = False
+        for x_point, y_point in self.points:
+            flag = flag or (((x_point - other.get_coordinate()[0]) ** 2 +
+                             (y_point - other.get_coordinate()[1]) ** 2
+                             ) ** 0.5 <= other.radius
+                            )
+        return flag
 
     def set_boost_x(self, boost: float = 0):
         self.boost_x = boost
@@ -82,14 +96,20 @@ class Circle:
     def make_acceleration_right(self, boost: float = 3):
         self.boost_x = boost
 
-    def upgrade(self, dt):
+    def upgrade(self, dt, other):
         self.hit_wall()
         self.move(dt)
+        self.points = [(cos(angel / 360 * pi * 2) * self.radius + self.get_coordinate()[0],
+                        sin(angel / 360 * pi * 2) * self.radius + self.get_coordinate()[1])
+                       for angel in range(0, 361, 30)]
         speed = ((self.sped_y)**2 + (self.sped_x)**2)**0.5
         if speed < 512:
             self.color= (int(speed/2), self.color[1], self.color[2])
         else:
             self.color=(255, self.color[1], self.color[2])
+        print(self.hit_other_circle(other))
+
+
 
 
 def main():
@@ -100,7 +120,9 @@ def main():
     clock = pygame.time.Clock()
     print(f"[+] create canvas")
     coordinate = Coordinate(x=30, y=30)
+    coordinate_other = Coordinate(x=250, y=250)
     circle_boss = Circle(coordinate, sped_x=30, sped_y=30, color=(150, 10, 50), radius=20, wall=canvas)
+    circle_other = Circle(coordinate_other, sped_x=0, sped_y=0, color=(15, 50, 50), radius=20, wall=canvas)
     while True:
         dt = clock.tick(50) / 1000.0
         for event in pygame.event.get():
@@ -120,9 +142,10 @@ def main():
                     circle_boss.make_acceleration_left()
                 if event.key == pygame.K_RIGHT:
                     circle_boss.make_acceleration_right()
-        circle_boss.upgrade(dt)
+        circle_boss.upgrade(dt, circle_other)
         screen.fill((0, 0, 0))  # black
         pygame.draw.circle(screen, circle_boss.color, circle_boss.get_coordinate(), circle_boss.radius)
+        pygame.draw.circle(screen, circle_other.color, circle_other.get_coordinate(), circle_other.radius)
         pygame.display.flip()
 
 
